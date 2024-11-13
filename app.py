@@ -1,6 +1,9 @@
 from flaskr import create_app
-from flaskr.modelos.modelos import Cliente, Rol, Categoria, Subcategoria, Proveedor, Producto, Venta, Factura, Detalle_Venta_Productos, Tabla_de_Pagos, Empleado, Empresas_Proveedoras
-from flaskr.modelos.modelos import db
+from flaskr.modelos.modelos import Album, Usuario, Medio, Cancion
+#from flask_restful import Api
+from .modelos import db
+"""from .vistas import VistaCanciones, VistaCancion, VistaSignIn, VistaLogIn, VistaAlbum, VistaAlbumsUsuario, VstaCancionesAlbum
+from flask_jwt_extended import JWTManager"""
 
 
 app = create_app('default')
@@ -10,23 +13,47 @@ db.init_app(app)
 db.create_all()
 
 
-with app.app_context():
-    empl = Empleado(nombre='Nubia Arias', contrasena= '12345')
-    cat = Categoria (nombre= 'Manos', subcategoria_id= '1' )
-    subcat = Subcategoria (nombre = 'uñas')
-    ven = Venta (fecha = '28-10-1999', total = 552820, empleado_id = 5)
-    prod = Producto (nombre = 'Esmalte rojo', precio_venta= 8000, iva = 0.19, precio_bruto= 4000, marca = 'masglo', cantidad = 2000, empleado_id = 5)
+with app.app_context():  # Este contexto generalmente se utiliza en frameworks web para ejecutar código relacionado con la aplicación.
 
-    cat.subcategoria_id.append(subcat)
-    empl.producto.append(prod)
-    empl.venta.append(ven)
-    db.session.add(cat)
-    db.session.add(ven)
-    db.session.commit()
-    print(Subcategoria.query.all())
-    print(Producto.query.all())
-    print(Empleado.query.all().nombre)
-    db.session.delete(subcat)
-    db.session.delete(cat)
-    print(Subcategoria.query.all())
-    print ()
+# Creación de instancias de las clases
+ u = Usuario(nombre='juan', contrasena='12345')
+ a = Album(titulo='prueba', anio=1999, descripcion='texto', medio=Medio.CD)
+ c = Cancion(titulo='Earth Song', minutos=6, segundos=45, interprete='Michael Jackson')
+
+ # Establecimiento de relaciones entre las instancias
+ u.albumes.append(a)
+ a.canciones.append(c)
+ 
+ # Agregar las instancias a la sesión de la base de datos
+ db.session.add(u)
+ db.session.add(c)
+ 
+ # Confirmar los cambios en la base de datos
+ db.session.commit()
+ 
+ # Consultas a la base de datos y visualización de resultados
+ print(Usuario.query.all())
+ print(Album.query.all())
+ print(Album.query.all()[0].canciones)
+ print(Cancion.query.all())
+ 
+ # Eliminación de una instancia y confirmación de los cambios
+ db.session.delete(a)  # Suponiendo que 'o' es una instancia a eliminar
+ 
+ # Nuevamente, se consultan los datos para verificar los cambios
+ print(Album.query.all())
+ print(Cancion.query.all())
+
+
+"""api = Api(app)
+api.add_resource(VistaCanciones, '/canciones')
+api.add_resource(VistaCancion, '/cancion/<int:id_cancion>')
+api.add_resource(VistaSignIn, '/signin')
+api.add_resource(VistaLogIn, '/login')
+api.add_resource(VistaAlbumsUsuario, '/usuario/<int:id_usuario>/albumes')
+api.add_resource(VistaAlbum, '/album/<int:id_album>')
+api.add_resource(VistaCancionesAlbum, '/album/<int:id_album>/canciones')
+
+jwt = JWTManager(app)"""
+
+
